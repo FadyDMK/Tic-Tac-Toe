@@ -18,11 +18,23 @@ var game = {
 
     currentPlayer: null,
 
+    cells: document.querySelectorAll('.cell'),
+    
+    bind: function(){
+        this.cells.forEach((e)=>{
+            e.addEventListener('click',()=>{
+                e.textContent='X';
+            })
+        })
+    },
+
+
     start: function () {
-        this.setNames();
-        this.render();
-        this.currentPlayer = this.player1;
-        this.playRound();
+        this.bind();
+        // this.setNames();
+        // this.render();
+        // this.currentPlayer = this.player1;
+        // this.playRound();
     },
 
     //sets the player names
