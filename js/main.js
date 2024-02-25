@@ -19,23 +19,56 @@ var game = {
     currentPlayer: null,
 
     cells: document.querySelectorAll('.cell'),
-    
-    bind: function(){
-        this.cells.forEach((e)=>{
-            e.addEventListener('click',()=>{
-                e.textContent='X';
-            })
-        })
-    },
-
+    scores: document.querySelector('.score'),
 
     start: function () {
+        this.currentPlayer = this.player1;
         this.bind();
+        
         // this.setNames();
         // this.render();
-        // this.currentPlayer = this.player1;
-        // this.playRound();
+        this.playRound();
     },
+
+    bind: function () {
+        var text;
+        var row;
+        var column;
+
+        this.cells.forEach((e) => {
+            const onClick = myFunction.bind(this);
+            function myFunction() {
+                text = (this.currentPlayer === this.player1) ? 'X' : 'O';
+                e.textContent = text;
+                if (parseInt(e.dataset.rank) <= 3) { row = 0 }
+                else if (parseInt(e.dataset.rank) >= 4 && parseInt(e.dataset.rank) <= 6) { row = 1 }
+                else if (parseInt(e.dataset.rank) >= 7) { row = 2 }
+
+                if ((parseInt(e.dataset.rank) - 1) % 3 === 0) { column = 0 }
+                else if ((parseInt(e.dataset.rank) - 2) % 3 === 0) { column = 1 }
+                else if ((parseInt(e.dataset.rank) - 3) % 3 === 0) { column = 2 };
+
+
+                this.gameBoard[row][column] = this.currentPlayer.token;
+                this.changeTurn();
+                console.log(this.gameBoard);
+
+                e.removeEventListener('click', onClick);
+            }
+
+            
+            
+            e.addEventListener('click', onClick);
+
+            
+            
+
+        })
+
+    },
+
+
+
 
     //sets the player names
     setNames: function () {
@@ -45,10 +78,7 @@ var game = {
 
     //renders the game board
     render: function () {
-        this.gameBoard.forEach((array) => {
-            console.log(array);
-            console.log("\n");
-        })
+
     },
 
     playTurn: function () {
@@ -79,25 +109,25 @@ var game = {
     },
 
 
-    getChoice: function () {
-        while (true) {
-            var choice = prompt(`${this.currentPlayer.name} ,choose a row(A,B or C) and column(1,2 or 3), e.g: A1: `);
-            if (['A', 'B', 'C'].includes(choice[0].toUpperCase()) && ['1', '2', '3'].includes(choice[1])) break;
-        }
-        return choice;
+    // getChoice: function () {
+    //     while (true) {
+    //         var choice = prompt(`${this.currentPlayer.name} ,choose a row(A,B or C) and column(1,2 or 3), e.g: A1: `);
+    //         if (['A', 'B', 'C'].includes(choice[0].toUpperCase()) && ['1', '2', '3'].includes(choice[1])) break;
+    //     }
+    //     return choice;
 
-    },
+    // },
     resetGame: function () {
         this.gameBoard = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
     },
 
     checkWin: function () {
         for (i = 0; i < 3; i++) {
-            if ((this.gameBoard[i][0] === this.gameBoard[i][1] && this.gameBoard[i][0] === this.gameBoard[i][2] && this.gameBoard[i][0] !=0)
-                || (this.gameBoard[0][i] === this.gameBoard[1][i] && this.gameBoard[0][i] === this.gameBoard[2][i] && this.gameBoard[0][i] !=0)) { return true };
+            if ((this.gameBoard[i][0] === this.gameBoard[i][1] && this.gameBoard[i][0] === this.gameBoard[i][2] && this.gameBoard[i][0] != 0)
+                || (this.gameBoard[0][i] === this.gameBoard[1][i] && this.gameBoard[0][i] === this.gameBoard[2][i] && this.gameBoard[0][i] != 0)) { return true };
         }
-        if ((this.gameBoard[0][0] === this.gameBoard[1][1] && this.gameBoard[0][0] === this.gameBoard[2][2] && this.gameBoard[0][0] !=0)
-            || (this.gameBoard[0][2] === this.gameBoard[1][1] && this.gameBoard[0][2] === this.gameBoard[2][0]&& this.gameBoard[2][0] !=0)) { return true; };
+        if ((this.gameBoard[0][0] === this.gameBoard[1][1] && this.gameBoard[0][0] === this.gameBoard[2][2] && this.gameBoard[0][0] != 0)
+            || (this.gameBoard[0][2] === this.gameBoard[1][1] && this.gameBoard[0][2] === this.gameBoard[2][0] && this.gameBoard[2][0] != 0)) { return true; };
 
 
         return false;
@@ -118,7 +148,7 @@ var game = {
         if (this.checkWin()) {
             this.changeTurn();
             console.log(`${this.currentPlayer.name} wins`);
-            this.currentPlayer.Score +=1;
+            this.currentPlayer.Score += 1;
             this.resetGame();
         }
         if (this.checkStalemate()) {
