@@ -20,55 +20,14 @@ var game = {
 
     cells: document.querySelectorAll('.cell'),
     scores: document.querySelector('.score'),
+    message: document.querySelector('.message'),
 
     start: function () {
         this.currentPlayer = this.player1;
-        this.bind();
-        
         // this.setNames();
-        // this.render();
-        this.playRound();
+        this.scores.textContent = `${this.player1.name} 0 - 0 ${this.player2.name}`
+        this.bind();
     },
-
-    bind: function () {
-        var text;
-        var row;
-        var column;
-
-        this.cells.forEach((e) => {
-            const onClick = myFunction.bind(this);
-            function myFunction() {
-                text = (this.currentPlayer === this.player1) ? 'X' : 'O';
-                e.textContent = text;
-                if (parseInt(e.dataset.rank) <= 3) { row = 0 }
-                else if (parseInt(e.dataset.rank) >= 4 && parseInt(e.dataset.rank) <= 6) { row = 1 }
-                else if (parseInt(e.dataset.rank) >= 7) { row = 2 }
-
-                if ((parseInt(e.dataset.rank) - 1) % 3 === 0) { column = 0 }
-                else if ((parseInt(e.dataset.rank) - 2) % 3 === 0) { column = 1 }
-                else if ((parseInt(e.dataset.rank) - 3) % 3 === 0) { column = 2 };
-
-
-                this.gameBoard[row][column] = this.currentPlayer.token;
-                this.changeTurn();
-                console.log(this.gameBoard);
-
-                e.removeEventListener('click', onClick);
-            }
-
-            
-            
-            e.addEventListener('click', onClick);
-
-            
-            
-
-        })
-
-    },
-
-
-
 
     //sets the player names
     setNames: function () {
@@ -76,49 +35,11 @@ var game = {
         this.player2.name = prompt("Please enter the second player's name", "Master Chief");
     },
 
-    //renders the game board
-    render: function () {
-
-    },
-
-    playTurn: function () {
-        var choice = this.getChoice();
-        let row;
-        let column = parseInt(choice[1]) - 1;
-
-        switch (choice[0].toUpperCase()) {
-            case 'A':
-                row = 0;
-                break;
-            case 'B':
-                row = 1;
-                break;
-            case 'C':
-                row = 2;
-                break;
-        }
-
-
-        while (this.gameBoard[row][column] != 0) {
-            console.log('invalid input, choose an empty cell!');
-            this.playTurn();
-        }
-
-        this.gameBoard[row][column] = this.currentPlayer.token;
-        this.render();
-    },
-
-
-    // getChoice: function () {
-    //     while (true) {
-    //         var choice = prompt(`${this.currentPlayer.name} ,choose a row(A,B or C) and column(1,2 or 3), e.g: A1: `);
-    //         if (['A', 'B', 'C'].includes(choice[0].toUpperCase()) && ['1', '2', '3'].includes(choice[1])) break;
-    //     }
-    //     return choice;
-
-    // },
     resetGame: function () {
         this.gameBoard = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+        this.cells.forEach((cell)=>{
+            cell.textContent = '';
+        })
     },
 
     checkWin: function () {
@@ -141,25 +62,58 @@ var game = {
     },
 
     playRound: function () {
-        while (!this.checkWin() && !this.checkStalemate()) {
-            this.playTurn();
-            this.changeTurn();
-        }
         if (this.checkWin()) {
             this.changeTurn();
-            console.log(`${this.currentPlayer.name} wins`);
+            this.message.textContent = `${this.currentPlayer.name} wins`;
             this.currentPlayer.Score += 1;
+            this.scores.textContent = `${this.player1.name} ${this.player1.Score} - ${this.player2.Score} ${this.player2.name}`;
             this.resetGame();
+            this.bind();
         }
         if (this.checkStalemate()) {
-            console.log('it\'s a draw ');
+            this.message.textContent = 'it\'s a draw ';
             this.resetGame();
+            this.bind();
         }
     },
+
+    //switches the player turn
     changeTurn: function () {
         if (this.currentPlayer === this.player1) { this.currentPlayer = this.player2; }
         else if (this.currentPlayer === this.player2) { this.currentPlayer = this.player1; }
-    }
+    },
+
+
+    //binds the divs to an event listener
+    bind: function () {
+        var text;
+        var row;
+        var column;
+
+        this.cells.forEach((e) => {
+            const onClick = myFunction.bind(this);
+            function myFunction() {
+                text = (this.currentPlayer === this.player1) ? 'X' : 'O';
+                e.textContent = text;
+                if (parseInt(e.dataset.rank) <= 3) { row = 0 }
+                else if (parseInt(e.dataset.rank) >= 4 && parseInt(e.dataset.rank) <= 6) { row = 1 }
+                else if (parseInt(e.dataset.rank) >= 7) { row = 2 }
+
+                if ((parseInt(e.dataset.rank) - 1) % 3 === 0) { column = 0 }
+                else if ((parseInt(e.dataset.rank) - 2) % 3 === 0) { column = 1 }
+                else if ((parseInt(e.dataset.rank) - 3) % 3 === 0) { column = 2 };
+
+
+                this.gameBoard[row][column] = this.currentPlayer.token;
+                this.changeTurn();
+                console.log(this.gameBoard);
+                e.removeEventListener('click', onClick);
+                this.playRound();
+            }
+            e.addEventListener('click', onClick);
+        })
+
+    },
 
 
 

@@ -11,7 +11,7 @@
     max-width: 100vw;
     display: flex;
     flex-direction: column;
-    gap: 60px;
+    gap: 70px;
     align-items: center;
 }
 
@@ -26,6 +26,9 @@
 
 .score{
     font-size: 40px;
+}
+.message{
+    font-size: 30px;
 }
 
 
